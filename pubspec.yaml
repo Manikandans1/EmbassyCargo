@@ -1,0 +1,93 @@
+name: embassycargo
+description: "A new Embassy Cargo project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.4 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  lottie: ^3.1.2
+  video_player: ^2.3.0
+  cupertino_icons: ^1.0.6
+#  connectivity_plus: ^3.0.3
+  connectivity_plus: ^4.0.0
+  url_launcher: ^6.1.11
+  http: ^1.2.2
+  web_socket_channel: ^2.0.0
+  image_picker: ^0.8.7+5
+  cached_network_image: ^3.2.1
+  flutter_svg: ^2.0.4
+  font_awesome_flutter: ^10.3.0
+  shared_preferences: ^2.0.15
+  provider: ^6.0.3
+  carousel_slider: ^4.0.0
+  google_fonts: ^5.0.0
+  flutter_screenutil: ^5.5.4
+  google_nav_bar: ^5.0.7
+  fluttertoast: ^8.0.7
+
+  flutter_stripe:
+
+
+  flutter_launcher_icons: ^0.14.3
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_foreground: "assets/icon/adaptive_foreground.png"
+  adaptive_icon_background: "assets/icon/adaptive_background.png"
+
+
+#  flutter_launcher_icons: ^0.14.3
+##  flutter_launcher_icons: ^0.13.1  # Check for the latest version
+#
+#flutter_icons:
+#  android: true
+#  ios: true
+#  image_path: "assets/icon/app_icon.png"  # Replace with your icon path
+#  adaptive_icon_background: "#ffffff"  # Optional for Android adaptive icons
+#  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"  # Optional for Android
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/instagram_icon.svg
+    - assets/images/logo.png
+    - assets/images/splash_logo.png
+    - assets/images/pay.png
+    - assets/images/airbg.png
+    - assets/images/aircargo11.png
+    - assets/images/seacargo11.png
+    - assets/images/aircargowarehouse.png
+    - assets/images/seawarehouse1.png
+    - assets/images/doorbg.png
+    - assets/images/shipbg.png
+    - assets/images/shippp.png
+    - assets/images/Air-Freight.png
+    - assets/images/ExpressCourior.png
+    - assets/images/CustomCleared.png
+    - assets/images/LocalCourior.png
+    - assets/images/WorldWideExpress.png
+    - assets/images/background.jpg
+    - assets/images/tracking.png
+    - assets/images/booking.png
+    - assets/animations/splash_screen.json
+    - assets/animations/no_internet.json
+    - assets/animations/order_success.json
+
+
+
+

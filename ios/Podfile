@@ -1,9 +1,18 @@
 platform :ios, '13.0'
 
+# Prevents CocoaPods from automatically configuring the project
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+# Flutter integration
+require_relative '../flutter_tools/bin/flutter_generate_podspec'
+
 use_frameworks!
 use_modular_headers!
 
 target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 

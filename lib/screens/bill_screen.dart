@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:shimmer/shimmer.dart';
 import '../services/connectivity_service.dart';
 import '../utils/colors.dart'; // Custom colors file
 import 'no_internet_screen.dart';
@@ -194,6 +195,28 @@ class _OnlinePaymentScreenState extends State<OnlinePaymentScreen> {
                                 keyboardType: TextInputType.name,
                               ),
                               SizedBox(height: screenHeight * 0.04),
+                              // ElevatedButton(
+                              //   onPressed: _isLoading ? null : _fetchPaymentDetailsAndNavigate,
+                              //   style: ElevatedButton.styleFrom(
+                              //     padding: EdgeInsets.symmetric(vertical: screenHeight * 0.018),
+                              //     backgroundColor: button_color,
+                              //     minimumSize: Size(double.infinity, screenHeight * 0.06),
+                              //     shape: RoundedRectangleBorder(
+                              //       borderRadius: BorderRadius.circular(10),
+                              //     ),
+                              //   ),
+                              //   child: _isLoading
+                              //       ? CircularProgressIndicator(color: button_color)
+                              //       : Text(
+                              //     'Pay Now',
+                              //     style: GoogleFonts.roboto(
+                              //       fontSize: screenWidth * 0.05,
+                              //       fontWeight: FontWeight.bold,
+                              //       color: Colors.black,
+                              //     ),
+                              //   ),
+                              // ),
+
                               ElevatedButton(
                                 onPressed: _isLoading ? null : _fetchPaymentDetailsAndNavigate,
                                 style: ElevatedButton.styleFrom(
@@ -205,15 +228,19 @@ class _OnlinePaymentScreenState extends State<OnlinePaymentScreen> {
                                   ),
                                 ),
                                 child: _isLoading
-                                    ? CircularProgressIndicator(color: button_color)
-                                    : Text(
-                                  'Pay Now',
-                                  style: GoogleFonts.roboto(
-                                    fontSize: screenWidth * 0.05,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
+                                    ? CircularProgressIndicator(color: Colors.white)
+                                    : Shimmer.fromColors(
+                                        baseColor: Colors.black, // Normal text color
+                                        highlightColor: Colors.white, // Shimmer effect color
+                                        child: Text(
+                                          'Pay Now',
+                                          style: GoogleFonts.roboto(
+                                            fontSize: screenWidth * 0.05,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black, // Default color (for when shimmer is off)
+                                          ),
+                                        ),
+                                      ),
                               ),
                             ],
                           ),

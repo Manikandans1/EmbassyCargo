@@ -24,6 +24,7 @@ import 'cargo_clearing_center_screen.dart';
 import 'home-cargo_screen.dart';
 import 'login_screen.dart';
 import 'no_internet_screen.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
@@ -100,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // List of screens for navigation
   final List<Widget> _screens = [
-    const HomeScreenContent(),
+     HomeScreenContent(),
     const TrackingScreen(),
     //const NotificationScreen(),
     OnlinePaymentScreen(),
@@ -487,471 +488,78 @@ void _launchWhatsApp() async {
       ),
     );
   }
-
-class HomeScreenContent extends StatelessWidget {
-  const HomeScreenContent({super.key});
-
-
-  @override
-  Widget build(BuildContext context) {
-    double screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
-    double screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    bool isLandscape = screenWidth > screenHeight;
-
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Space before Special Offers section
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.024,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
-            // child: Text(
-            //   'Special Offers',
-            //   style: GoogleFonts.roboto(
-            //     fontSize: dynamicFontSize(context, 26),
-            //     fontWeight: FontWeight.bold,
-            //     color: primaryColor,
-            //   ),
-            // ),
-            child: Text(
-              'Special Offers',
-              style: GoogleFonts.poppins( // Modern and clean font
-                fontSize: dynamicFontSize(context, 26),
-                fontWeight: FontWeight.w600, // Semi-bold for a sleek look
-                color: primaryColor,
-                letterSpacing: 1.2, // Adds slight spacing for a premium feel
-              ),
-            ),
-
-          ),
-          SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-
-          // OfferImagesScreen section
-          Container(
-            color: Colors.red,
-            height: MediaQuery.of(context).size.height * 0.6,
-            width: MediaQuery.of(context).size.width,
-            child: OfferImagesScreen(),
-          ),
-
-          SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-
-          //Dashboard section
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
-            child: Text(
-              'Dashboard',
-              style: GoogleFonts.poppins( // Modern and clean font
-                fontSize: dynamicFontSize(context, 26),
-                fontWeight: FontWeight.w600, // Semi-bold for a sleek look
-                color: primaryColor,
-                letterSpacing: 1.2, // Adds slight spacing for a premium feel
-              ),
-            ),
-          ),
-          SizedBox(height: MediaQuery.of(context).size.height * 0.0),
-
-          Container(
-            color: Colors.white,
-            height: MediaQuery.of(context).size.height * 0.75,
-            width: MediaQuery.of(context).size.width,
-            child: CargoBookingScreen(),
-          ),
-          SizedBox(height: MediaQuery.of(context).size.height * 0.0),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-            decoration: BoxDecoration(
-              color: Color(0xFF4A00E0),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              children: [
-                // Header Text
-                Text(
-                  "Instant Cargo, Effortless Booking\nJust a Tap Away!",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: screenWidth * 0.05,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(height: screenHeight * 0.02),
-
-                // Booking Button
-                SizedBox(
-                  width: screenWidth * 0.8,
-                  height: screenHeight * 0.06,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BookingScreen(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 5,
-                    ),
-                    child: Text(
-                      "Schedule My Cargo",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.045,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-        ],
-      ),
-    );
-  }
-  // Dynamic font size adjustment based on screen width
-  double dynamicFontSize(BuildContext context, double baseSize) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    if (screenWidth < 360) {
-      return baseSize * 0.85; // Smaller screens get slightly smaller font sizes
-    } else if (screenWidth > 600) {
-      return baseSize * 1.2; // Larger screens get slightly larger font sizes
-    }
-    return baseSize; // Default size for medium screens
-  }
-}
-
-  // --------new offers to upload----
-
-class OfferImagesScreen extends StatefulWidget {
-  @override
-  _OfferImagesScreenState createState() => _OfferImagesScreenState();
-}
-
-class _OfferImagesScreenState extends State<OfferImagesScreen> {
-  List<Image> offerImages = [];
-  int currentIndex = 0;
-  final PageController _pageController = PageController();
-
-  @override
-  void initState() {
-    super.initState();
-    fetchOfferImages();
-    startAutoScroll();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  // Fetch and cache images
-  Future<void> fetchOfferImages() async {
-    try {
-      final response = await http.get(Uri.parse("http://64.23.143.44:8000/offers/"));
-
-      if (response.statusCode == 200) {
-        List<Map<String, dynamic>> offers = List<Map<String, dynamic>>.from(jsonDecode(response.body));
-
-        // Fetch all images in parallel
-        List<Future<Image>> imageFutures = offers.map((offer) async {
-          final imgResponse = await http.get(Uri.parse("http://64.23.143.44:8000/offers/${offer['id']}"));
-          if (imgResponse.statusCode == 200) {
-            return Image.memory(imgResponse.bodyBytes, fit: BoxFit.cover);
-          } else {
-            return Image.asset("assets/placeholder.jpg", fit: BoxFit.cover); // Fallback image
-          }
-        }).toList();
-
-        // Wait for all images to be fetched and store them
-        List<Image> loadedImages = await Future.wait(imageFutures);
-
-        setState(() {
-          offerImages = loadedImages;
-        });
-      } else {
-        print("Failed to load offers: ${response.statusCode}");
-      }
-    } catch (e) {
-      print("Error fetching offers: $e");
-    }
-  }
-
-  // Auto-scroll logic
-  void startAutoScroll() {
-    Timer.periodic(Duration(seconds: 7), (timer) {
-      if (_pageController.hasClients && offerImages.isNotEmpty) {
-        currentIndex = (currentIndex + 1) % offerImages.length;
-        _pageController.animateToPage(
-          currentIndex,
-          duration: Duration(milliseconds: 420),
-          curve: Curves.easeInOut,
-        );
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: offerImages.isEmpty
-          ? Center(
-        child: CircularProgressIndicator(
-          color: primaryColor, // Custom indicator color
-        ),
-      )
-          : Column(
-        children: [
-          // Carousel with indicators
-          Expanded(
-            flex: 8,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width * 0.03,
-                vertical: MediaQuery.of(context).size.height * 0.02,
-              ),
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  PageView.builder(
-                    controller: _pageController,
-                    itemCount: offerImages.length,
-                    onPageChanged: (index) {
-                      setState(() {
-                        currentIndex = index;
-                      });
-                    },
-                    itemBuilder: (context, index) {
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: offerImages[index],
-                      );
-                    },
-                  ),
-                  // Indicator for carousel
-                  Positioned(
-                    bottom: MediaQuery.of(context).size.height * 0.03,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        offerImages.length,
-                            (index) => Container(
-                          margin: EdgeInsets.symmetric(horizontal: 4),
-                          width: currentIndex == index ? 12 : 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: currentIndex == index
-                                ? primaryColor
-                                : Colors.grey,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
-
-  // -----------image --offers--Working Fine------
 //
-//   class OfferImagesScreen extends StatefulWidget {
-//   @override
-//   _OfferImagesScreenState createState() => _OfferImagesScreenState();
-// }
+// class HomeScreenContent extends StatelessWidget {
+//   const HomeScreenContent({super.key});
 //
-// class _OfferImagesScreenState extends State<OfferImagesScreen> {
-//   List<Map<String, dynamic>> offers = [];
-//   int currentIndex = 0;
-//   final PageController _pageController = PageController();
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     fetchOfferImages();
-//     startAutoScroll();
-//   }
-//
-//   @override
-//   void dispose() {
-//     _pageController.dispose();
-//     super.dispose();
-//   }
-//
-//   // Fetch list of offers
-//   Future<void> fetchOfferImages() async {
-//     try {
-//       //final response = await http.get(Uri.parse("http://192.168.137.1:8000/offers/"));
-//       final response = await http.get(Uri.parse("http://64.23.143.44:8000/offers/"));
-//       if (response.statusCode == 200) {
-//         setState(() {
-//           offers = List<Map<String, dynamic>>.from(jsonDecode(response.body));
-//         });
-//       } else {
-//         print("Failed to load offers: ${response.statusCode}");
-//       }
-//     } catch (e) {
-//       print("Error fetching offers: $e");
-//     }
-//   }
-//
-//   // Fetch specific offer image
-//   Future<Image> fetchOfferImage(String imageId) async {
-//     //final url = Uri.parse("http://192.168.137.1:8000/offers/$imageId");
-//     final url = Uri.parse("http://64.23.143.44:8000/offers/$imageId");
-//     final response = await http.get(url);
-//
-//     if (response.statusCode == 200) {
-//       return Image.memory(
-//         response.bodyBytes,
-//         fit: BoxFit.cover,
-//       );
-//     } else {
-//       throw Exception("Failed to load image");
-//     }
-//   }
-//
-//   // Auto-scroll logic
-//   void startAutoScroll() {
-//     Timer.periodic(Duration(seconds: 7), (timer) {
-//       if (_pageController.hasClients && offers.isNotEmpty) {
-//         currentIndex = (currentIndex + 1) % offers.length;
-//         _pageController.animateToPage(
-//           currentIndex,
-//           duration: Duration(milliseconds: 420),
-//           curve: Curves.easeInOut,
-//         );
-//       }
-//     });
-//   }
 //
 //   @override
 //   Widget build(BuildContext context) {
-//     return Container(
-//       child: Scaffold(
-//       backgroundColor: background_color,
-//       body: offers.isEmpty
-//           ? Center(
-//         child: CircularProgressIndicator(
-//           color: app_bar_color, // Custom indicator color
-//         ),
-//       )
-//           : Column(
+//     double screenWidth = MediaQuery
+//         .of(context)
+//         .size
+//         .width;
+//     double screenHeight = MediaQuery
+//         .of(context)
+//         .size
+//         .height;
+//     bool isLandscape = screenWidth > screenHeight;
+//
+//     return SingleChildScrollView(
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
 //         children: [
-//           // Carousel with indicators
-//           Expanded(
-//             flex: 8,
-//             child: Padding(
-//               padding: EdgeInsets.symmetric(
-//                 horizontal: MediaQuery.of(context).size.width * 0.03, // 5% of screen width
-//                 vertical: MediaQuery.of(context).size.height * 0.02, // 2% of screen height
+//           // Space before Special Offers section
+//           SizedBox(
+//             height: MediaQuery.of(context).size.height * 0.024,
+//           ),
+//           Padding(
+//             padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
+//             child: Text(
+//               'Special Offers',
+//               style: GoogleFonts.poppins( // Modern and clean font
+//                 fontSize: dynamicFontSize(context, 26),
+//                 fontWeight: FontWeight.w600, // Semi-bold for a sleek look
+//                 color: primaryColor,
+//                 letterSpacing: 1.2, // Adds slight spacing for a premium feel
 //               ),
-//               child: Stack(
-//                 alignment: Alignment.bottomCenter,
-//                 children: [
-//                   PageView.builder(
-//                     controller: _pageController,
-//                     itemCount: offers.length,
-//                     onPageChanged: (index) {
-//                       setState(() {
-//                         currentIndex = index;
-//                       });
-//                     },
-//                     itemBuilder: (context, index) {
-//                       final offer = offers[index];
-//                       return FutureBuilder<Image>(
-//                         future: fetchOfferImage(offer['id'].toString()),
-//                         builder: (context, snapshot) {
-//                           if (snapshot.connectionState == ConnectionState.waiting) {
-//                             return Center(
-//                               child: CircularProgressIndicator(
-//                                 color: app_bar_color,
-//                               ),
-//                             );
-//                           } else if (snapshot.hasError) {
-//                             return Center(child: Icon(Icons.error));
-//                           } else {
-//                             return ClipRRect(
-//                               borderRadius: BorderRadius.circular(10),
-//                               child: snapshot.data!,
-//                             );
-//                           }
-//                         },
-//                       );
-//                     },
-//                   ),
-//                   // Indicator for carousel
-//                   Positioned(
-//                     bottom: MediaQuery.of(context).size.height * 0.03, // 3% of screen height
-//                     child: Row(
-//                       mainAxisAlignment: MainAxisAlignment.center,
-//                       children: List.generate(
-//                         offers.length,
-//                             (index) => Container(
-//                           margin: EdgeInsets.symmetric(horizontal: 4),
-//                           width: currentIndex == index ? 12 : 8,
-//                           height: 8,
-//                           decoration: BoxDecoration(
-//                             color: currentIndex == index
-//                                 ? Colors.red
-//                                 : Colors.grey,
-//                             shape: BoxShape.circle,
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-//                 ],
+//             ),
+//
+//           ),
+//           SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+//
+//           // OfferImagesScreen section
+//           Container(
+//             color: Colors.red,
+//             height: MediaQuery.of(context).size.height * 0.6,
+//             width: MediaQuery.of(context).size.width,
+//             child: OfferImagesScreen(),
+//           ),
+//
+//           SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+//
+//           //Dashboard section
+//           Padding(
+//             padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.04),
+//             child: Text(
+//               'Dashboard',
+//               style: GoogleFonts.poppins( // Modern and clean font
+//                 fontSize: dynamicFontSize(context, 26),
+//                 fontWeight: FontWeight.w600, // Semi-bold for a sleek look
+//                 color: primaryColor,
+//                 letterSpacing: 1.2, // Adds slight spacing for a premium feel
 //               ),
 //             ),
 //           ),
-//         ],
-//       ),
-//       ),
-//     );
-//   }
-// }
-
-
-
+//           SizedBox(height: MediaQuery.of(context).size.height * 0.0),
 //
-// class CargoBookingScreen extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       body: Column(
-//         children: [
-//           // Purple Header Section
+//           Container(
+//             color: Colors.white,
+//             height: MediaQuery.of(context).size.height * 0.75,
+//             width: MediaQuery.of(context).size.width,
+//             child: CargoBookingScreen(),
+//           ),
+//           SizedBox(height: MediaQuery.of(context).size.height * 0.0),
 //           Container(
 //             margin: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
 //             padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
@@ -966,20 +574,19 @@ class _OfferImagesScreenState extends State<OfferImagesScreen> {
 //                   "Instant Cargo, Effortless Booking\nJust a Tap Away!",
 //                   textAlign: TextAlign.center,
 //                   style: TextStyle(
-//                     fontSize: MediaQuery.of(context).size.width * 0.05,
+//                     fontSize: screenWidth * 0.05,
 //                     fontWeight: FontWeight.bold,
 //                     color: Colors.white,
 //                   ),
 //                 ),
-//                 SizedBox(height: 15),
+//                 SizedBox(height: screenHeight * 0.02),
 //
 //                 // Booking Button
 //                 SizedBox(
-//                   width: MediaQuery.of(context).size.width * 0.8,
-//                   height: 50,
+//                   width: screenWidth * 0.8,
+//                   height: screenHeight * 0.06,
 //                   child: ElevatedButton(
 //                     onPressed: () {
-//                       // Navigate to general booking page
 //                       Navigator.push(
 //                         context,
 //                         MaterialPageRoute(
@@ -995,10 +602,11 @@ class _OfferImagesScreenState extends State<OfferImagesScreen> {
 //                       ),
 //                       elevation: 5,
 //                     ),
-//                     child: Text("Instant Cargo Booking",
+//                     child: Text(
+//                       "Schedule My Cargo",
 //                       textAlign: TextAlign.center,
 //                       style: TextStyle(
-//                         fontSize: MediaQuery.of(context).size.width * 0.05,
+//                         fontSize: screenWidth * 0.045,
 //                         fontWeight: FontWeight.bold,
 //                         color: Colors.black,
 //                       ),
@@ -1008,24 +616,134 @@ class _OfferImagesScreenState extends State<OfferImagesScreen> {
 //               ],
 //             ),
 //           ),
-//           SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-//           // Cargo Service Grid (Non-scrollable)
-//           Expanded(
-//             child: Padding(
-//               padding: EdgeInsets.symmetric(horizontal: 16),
-//               child: GridView.builder(
-//                 physics: NeverScrollableScrollPhysics(), // Prevent scrolling
-//                 shrinkWrap: true, // Ensures the grid takes necessary space
-//                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-//                   crossAxisCount: 2,
-//                   crossAxisSpacing: 15,
-//                   mainAxisSpacing: 15,
-//                   childAspectRatio: 0.9, // Adjusted aspect ratio for height
+//           SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+//         ],
+//       ),
+//     );
+//   }
+//   // Dynamic font size adjustment based on screen width
+//   double dynamicFontSize(BuildContext context, double baseSize) {
+//     double screenWidth = MediaQuery.of(context).size.width;
+//     if (screenWidth < 360) {
+//       return baseSize * 0.85; // Smaller screens get slightly smaller font sizes
+//     } else if (screenWidth > 600) {
+//       return baseSize * 1.2; // Larger screens get slightly larger font sizes
+//     }
+//     return baseSize; // Default size for medium screens
+//   }
+// }
+
+
+// class HomeScreenContent extends StatelessWidget {
+//   const HomeScreenContent({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     // Screen dimensions for responsive design
+//     final Size screenSize = MediaQuery.of(context).size;
+//     final double screenWidth = screenSize.width;
+//     final double screenHeight = screenSize.height;
+//
+//     return ListView(
+//       physics: const BouncingScrollPhysics(),
+//       padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+//       children: [
+//         SizedBox(height: screenHeight * 0.02),
+//
+//         // Special Offers Header
+//         _buildHeaderText('Special Offers', context),
+//         SizedBox(height: screenHeight * 0.02),
+//
+//         // Offer Images Section
+//         SizedBox(
+//           height: screenHeight * 0.6,
+//           child:  OfferImagesScreen(),
+//         ),
+//
+//         SizedBox(height: screenHeight * 0.02),
+//         _buildHeaderText('Dashboard', context),
+//         SizedBox(height: screenHeight * 0.02),
+//
+//         // Cargo Booking Section
+//         SizedBox(
+//           height: screenHeight * 0.75,
+//           child:  CargoBookingScreen(),
+//         ),
+//
+//         SizedBox(height: screenHeight * 0.02),
+//
+//         // Call to Action (Instant Booking)
+//         _buildCallToAction(context, screenWidth, screenHeight),
+//
+//         SizedBox(height: screenHeight * 0.02),
+//       ],
+//     );
+//   }
+//
+//   // Header Text Widget
+//   Widget _buildHeaderText(String title, BuildContext context) {
+//     return Text(
+//       title,
+//       style: GoogleFonts.poppins(
+//         fontSize: dynamicFontSize(context, 26),
+//         fontWeight: FontWeight.w600,
+//         color: Colors.blue, // Change as per your primary color
+//         letterSpacing: 1.2,
+//       ),
+//     );
+//   }
+//
+//   // Call to Action Widget
+//   Widget _buildCallToAction(BuildContext context, double screenWidth, double screenHeight) {
+//     return Container(
+//       margin: const EdgeInsets.symmetric(vertical: 10),
+//       padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+//       decoration: BoxDecoration(
+//         color: const Color(0xFF4A00E0),
+//         borderRadius: BorderRadius.circular(10),
+//       ),
+//       child: Column(
+//         children: [
+//           Text(
+//             "Instant Cargo, Effortless Booking\nJust a Tap Away!",
+//             textAlign: TextAlign.center,
+//             style: TextStyle(
+//               fontSize: screenWidth * 0.05,
+//               fontWeight: FontWeight.bold,
+//               color: Colors.white,
+//             ),
+//           ),
+//           SizedBox(height: screenHeight * 0.02),
+//
+//           // Booking Button
+//           SizedBox(
+//             width: screenWidth * 0.8,
+//             height: screenHeight * 0.06,
+//             child: ElevatedButton(
+//               onPressed: () {
+//                 Navigator.push(
+//                   context,
+//                   MaterialPageRoute(
+//                     builder: (context) => const BookingScreen(),
+//                   ),
+//                 );
+//               },
+//               style: ElevatedButton.styleFrom(
+//                 backgroundColor: Colors.white,
+//                 foregroundColor: Colors.black,
+//                 shape: RoundedRectangleBorder(
+//                   borderRadius: BorderRadius.circular(12),
 //                 ),
-//                 itemCount: cargoOptions.length,
-//                 itemBuilder: (context, index) {
-//                   return CargoCard(option: cargoOptions[index]);
-//                 },
+//                 elevation: 5,
+//               ),
+//               child: Text(
+//                 "Schedule My Cargo",
+//                 textAlign: TextAlign.center,
+//                 style: TextStyle(
+//                   fontSize: screenWidth * 0.045,
+//                   fontWeight: FontWeight.bold,
+//                   color: Colors.black,
+//                 ),
 //               ),
 //             ),
 //           ),
@@ -1033,155 +751,21 @@ class _OfferImagesScreenState extends State<OfferImagesScreen> {
 //       ),
 //     );
 //   }
-// }
 //
-// // Cargo Option Model
-// class CargoOption {
-//   final String title;
-//   final String image;
-//   // final VoidCallback onTap;
-//   final Function(BuildContext) onTap;
-//
-//   CargoOption({required this.title, required this.image, required this.onTap});
-// }
-//
-//
-// List<CargoOption> cargoOptions = [
-//   CargoOption(
-//     title: "Air Cargo \nDoor To Door",
-//     image: "assets/images/aircargo11.png",
-//     onTap: (BuildContext context) {
-//       Navigator.push(
-//         context,
-//         MaterialPageRoute(builder: (context) => AirCargoScreen()),
-//       );
-//     },
-//   ),
-//   CargoOption(
-//     title: "Sea Cargo \nDoor To Door",
-//     image: "assets/images/seacargo11.png",
-//     onTap: (BuildContext context) {
-//       Navigator.push(
-//         context,
-//         MaterialPageRoute(builder: (context) => SeaCargoScreen()),
-//       );
-//     },
-//   ),
-//   CargoOption(
-//     title: "Air Cargo \nWarehouse",
-//     image: "assets/images/aircargowarehouse.png",
-//     onTap: (BuildContext context) {
-//       Navigator.push(
-//         context,
-//         MaterialPageRoute(builder: (context) => AirCargoWarehouse()),
-//       );
-//     },
-//   ),
-//   CargoOption(
-//     title: "Sea Cargo \nWarehouse",
-//     image: "assets/images/seawarehouse1.png",
-//     onTap: (BuildContext context) {
-//       Navigator.push(
-//         context,
-//         MaterialPageRoute(builder: (context) => HomeCargoScreen()),
-//       );
-//     },
-//   ),
-// ];
-//
-//
-// // Cargo Card Widget
-// class CargoCard extends StatelessWidget {
-//   final CargoOption option;
-//
-//   const CargoCard({Key? key, required this.option}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return GestureDetector(
-//       onTap: () => option.onTap(context), // Fix: Pass context correctly
-//       child: Card(
-//         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-//         elevation: 5,
-//         child: Container(
-//           height: 320,
-//           child: Stack(
-//             alignment: Alignment.center,
-//             children: [
-//               // Background Image
-//               ClipRRect(
-//                 borderRadius: BorderRadius.circular(12),
-//                 child: Image.asset(
-//                   option.image,
-//                   fit: BoxFit.cover,
-//                   width: double.infinity,
-//                   height: double.infinity,
-//                 ),
-//               ),
-//               // Dark Gradient Overlay
-//               Container(
-//                 decoration: BoxDecoration(
-//                   borderRadius: BorderRadius.circular(12),
-//                   gradient: LinearGradient(
-//                     colors: [Colors.black.withOpacity(0.6), Colors.transparent],
-//                     begin: Alignment.bottomCenter,
-//                     end: Alignment.topCenter,
-//                   ),
-//                 ),
-//               ),
-//               // Title & Button
-//               Positioned(
-//                 bottom: 10,
-//                 child: Column(
-//                   children: [
-//                     Padding(
-//                       padding: EdgeInsets.symmetric(horizontal: 8),
-//                       child: Text(
-//                         option.title,
-//                         textAlign: TextAlign.center,
-//                         style: TextStyle(
-//                           color: Colors.white,
-//                           fontWeight: FontWeight.bold,
-//                           fontSize: 16,
-//                         ),
-//                       ),
-//                     ),
-//                     SizedBox(height: 5),
-//                     // Book Now Button with Separate Action
-//                     SizedBox(
-//                       width: 120,
-//                       height: 35, // Increased button size
-//                       child: ElevatedButton(
-//                         onPressed: () => option.onTap(context), // Fix: Pass context correctly
-//                         style: ElevatedButton.styleFrom(
-//                           backgroundColor: Colors.white,
-//                           foregroundColor: Colors.black,
-//                           shape: RoundedRectangleBorder(
-//                             borderRadius: BorderRadius.circular(8),
-//                               side: BorderSide(color: Colors.black, width: 1),
-//                           ),
-//                         ),
-//                         child: Text("Book Now",
-//                           textAlign: TextAlign.center,
-//                           style: TextStyle(
-//                             color: Colors.black,
-//                             fontWeight: FontWeight.bold,
-//                             fontSize: 15,
-//                           ),),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
+//   // Dynamic font size adjustment
+//   double dynamicFontSize(BuildContext context, double baseSize) {
+//     double screenWidth = MediaQuery.of(context).size.width;
+//     if (screenWidth < 360) {
+//       return baseSize * 0.85; // Smaller screens
+//     } else if (screenWidth > 600) {
+//       return baseSize * 1.2; // Larger screens
+//     }
+//     return baseSize; // Default
 //   }
 // }
 
-class CargoBookingScreen extends StatelessWidget {
+
+class HomeScreenContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -1189,133 +773,205 @@ class CargoBookingScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView( // Added scroll to support content overflow
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          child: Column(
-            children: [
-              // Header Section (Purple)
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-                decoration: BoxDecoration(
-                  color: Color(0xFF4A00E0),
-                  borderRadius: BorderRadius.circular(12),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Column(
+              children: [
+
+                SizedBox(height: screenHeight * 0.01),
+                // Special Offers Header
+                _buildHeaderText('Special Offers', context),
+                SizedBox(height: screenHeight * 0.0),
+                // Offer Images Section
+                SizedBox(
+                  height: screenHeight * 0.6,
+                  child:  OfferImagesScreen(),
                 ),
-                child: Column(
-                  children: [
-                    Text(
-                      "Instant Cargo, Effortless Booking\nJust a Tap Away!",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.05,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(height: screenHeight * 0.02),
-                    SizedBox(
-                      width: screenWidth * 0.8,
-                      height: screenHeight * 0.06,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => BookingScreen()),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 5,
-                        ),
-                        child: Text(
-                          "Instant Cargo Booking",
-                          style: TextStyle(
-                            fontSize: screenWidth * 0.045,
-                            fontWeight: FontWeight.bold,
-                          ),
+                SizedBox(height: screenHeight * 0.0),
+                // Special Offers Header
+                _buildHeaderText('Services', context),
+                SizedBox(height: screenHeight * 0.01),
+                // Header Section
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Color(0xFF4A00E0),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Instant Cargo, Effortless Booking\nJust a Tap Away!",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.05,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: screenHeight * 0.01),
+                      SizedBox(height: screenHeight * 0.02),
+                      SizedBox(
+                        width: screenWidth * 0.8,
+                        height: screenHeight * 0.06,
 
-              // Cargo Service Grid (Non-scrollable)
-              GridView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 15,
-                  mainAxisSpacing: 15,
-                  childAspectRatio: 0.9,
-                ),
-                itemCount: cargoOptions.length,
-                itemBuilder: (context, index) {
-                  return CargoCard(option: cargoOptions[index]);
-                },
-              ),
 
-              // SizedBox(height: screenHeight * 0.01),
-              // Container(
-              //   padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-              //   decoration: BoxDecoration(
-              //     color: Color(0xFF4A00E0),
-              //     borderRadius: BorderRadius.circular(12),
-              //   ),
-              //   child: Column(
-              //     children: [
-              //       Text(
-              //         "Instant Cargo, Effortless Booking\nJust a Tap Away!",
-              //         textAlign: TextAlign.center,
-              //         style: TextStyle(
-              //           fontSize: screenWidth * 0.05,
-              //           fontWeight: FontWeight.bold,
-              //           color: Colors.white,
-              //         ),
-              //       ),
-              //       SizedBox(height: screenHeight * 0.02),
-              //       SizedBox(
-              //         width: screenWidth * 0.8,
-              //         height: screenHeight * 0.06,
-              //         child: ElevatedButton(
-              //           onPressed: () {
-              //             Navigator.push(
-              //               context,
-              //               MaterialPageRoute(builder: (context) => BookingScreen()),
-              //             );
-              //           },
-              //           style: ElevatedButton.styleFrom(
-              //             backgroundColor: Colors.white,
-              //             foregroundColor: Colors.black,
-              //             shape: RoundedRectangleBorder(
-              //               borderRadius: BorderRadius.circular(12),
-              //             ),
-              //             elevation: 5,
-              //           ),
-              //           child: Text(
-              //             "Schedule My Cargo",
-              //             style: TextStyle(
-              //               fontSize: screenWidth * 0.045,
-              //               fontWeight: FontWeight.bold,
-              //             ),
-              //           ),
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              SizedBox(height: screenHeight * 0.01),
-            ],
+                        // import 'package:shimmer/shimmer.dart';
+                        //
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BookingScreen(),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            foregroundColor: Colors.black26,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 5,
+                          ),
+                          child: Shimmer.fromColors(
+                            baseColor: Colors.amber,
+                            highlightColor: Colors.yellowAccent,
+                            child: Text(
+                              "Instant Cargo Booking",
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: screenWidth * 0.045,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // child: ElevatedButton(
+                        //   onPressed: () {
+                        //     Navigator.push(
+                        //       context,
+                        //       MaterialPageRoute(
+                        //         builder: (context) => BookingScreen(),
+                        //       ),
+                        //     );
+                        //   },
+                        //   style: ElevatedButton.styleFrom(
+                        //     backgroundColor: Colors.white,
+                        //     foregroundColor: Colors.black,
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(12),
+                        //     ),
+                        //     elevation: 5,
+                        //   ),
+                        //   child: Text(
+                        //     "Instant Cargo Booking",
+                        //     style: TextStyle(
+                        //       fontSize: screenWidth * 0.045,
+                        //       fontWeight: FontWeight.bold,
+                        //     ),
+                        //   ),
+                        // ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: screenHeight * 0.02),
+
+                // Cargo Service Grid
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 15,
+                    mainAxisSpacing: 15,
+                    childAspectRatio: 0.9,
+                  ),
+                  itemCount: cargoOptions.length,
+                  itemBuilder: (context, index) {
+                    return CargoCard(option: cargoOptions[index]);
+                  },
+                ),
+                // SizedBox(height: screenHeight * 0.02),
+                // Container(
+                //   padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                //   decoration: BoxDecoration(
+                //     color: Color(0xFF4A00E0),
+                //     borderRadius: BorderRadius.circular(12),
+                //   ),
+                //   child: Column(
+                //     children: [
+                //       Text(
+                //         "Instant Cargo, Effortless Booking\nJust a Tap Away!",
+                //         textAlign: TextAlign.center,
+                //         style: TextStyle(
+                //           fontSize: screenWidth * 0.05,
+                //           fontWeight: FontWeight.bold,
+                //           color: Colors.white,
+                //         ),
+                //       ),
+                //       SizedBox(height: screenHeight * 0.02),
+                //       SizedBox(
+                //         width: screenWidth * 0.8,
+                //         height: screenHeight * 0.06,
+                //         child: ElevatedButton(
+                //           onPressed: () {},
+                //           style: ElevatedButton.styleFrom(
+                //             backgroundColor: Colors.white,
+                //             foregroundColor: Colors.black,
+                //             shape: RoundedRectangleBorder(
+                //               borderRadius: BorderRadius.circular(12),
+                //             ),
+                //             elevation: 5,
+                //           ),
+                //           child: Text(
+                //             "Instant Cargo Booking",
+                //             style: TextStyle(
+                //               fontSize: screenWidth * 0.045,
+                //               fontWeight: FontWeight.bold,
+                //             ),
+                //           ),
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                // SizedBox(height: screenHeight * 0.02),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+  Widget _buildHeaderText(String text, BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft, // Align to the left
+      child: Text(
+        text,
+        textAlign: TextAlign.left,
+            style: GoogleFonts.poppins(
+              fontSize: dynamicFontSize(context, 26),
+              fontWeight: FontWeight.w600,
+              color: Colors.blue, // Change as per your primary color
+              letterSpacing: 1.2,
+            ),
+      ),
+    );
+  }
+  // Dynamic font size adjustment
+  double dynamicFontSize(BuildContext context, double baseSize) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth < 360) {
+      return baseSize * 0.85; // Smaller screens
+    } else if (screenWidth > 600) {
+      return baseSize * 1.2; // Larger screens
+    }
+    return baseSize; // Default
   }
 }
 
@@ -1372,7 +1028,6 @@ List<CargoOption> cargoOptions = [
 
 class CargoCard extends StatelessWidget {
   final CargoOption option;
-
   const CargoCard({Key? key, required this.option}) : super(key: key);
 
   @override
@@ -1385,7 +1040,6 @@ class CargoCard extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 5,
         child: Container(
-          height: screenWidth * 0.45,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -1432,7 +1086,9 @@ class CargoCard extends StatelessWidget {
                       width: screenWidth * 0.3,
                       height: 35,
                       child: ElevatedButton(
-                        onPressed: () => option.onTap(context),
+                        onPressed: () {
+                          option.onTap(context);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: Colors.black,
@@ -1461,12 +1117,162 @@ class CargoCard extends StatelessWidget {
     );
   }
 }
+// working Code
+class OfferImagesScreen extends StatefulWidget {
+  @override
+  _OfferImagesScreenState createState() => _OfferImagesScreenState();
+}
 
+class _OfferImagesScreenState extends State<OfferImagesScreen> {
+  List<String> offerImages = [];
+  int currentIndex = 0;
+  final PageController _pageController = PageController();
+  bool isLoading = true;
 
+  @override
+  void initState() {
+    super.initState();
+    fetchOfferImages();
+    startAutoScroll();
+  }
 
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
+  // ✅ Fetch Offer Images from API
+  Future<void> fetchOfferImages() async {
+    try {
+      final response = await http.get(Uri.parse("http://64.23.143.44:8000/offers/"));
 
+      if (response.statusCode == 200) {
+        List<dynamic> offers = jsonDecode(response.body);
 
+        List<String> imageUrls = offers.map((offer) {
+          return "http://64.23.143.44:8000/offers/${offer['id']}"; // ✅ Ensure correct URL
+        }).toList();
+
+        setState(() {
+          offerImages = imageUrls;
+          isLoading = false; // ✅ Stop shimmer
+        });
+      } else {
+        print("Failed to load offers: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching offers: $e");
+    }
+  }
+
+  // ✅ Auto-scroll Logic
+  void startAutoScroll() {
+    Timer.periodic(Duration(seconds: 7), (timer) {
+      if (_pageController.hasClients && offerImages.isNotEmpty) {
+        currentIndex = (currentIndex + 1) % offerImages.length;
+        _pageController.animateToPage(
+          currentIndex,
+          duration: Duration(milliseconds: 420),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: isLoading
+          ? _buildShimmerEffect()
+          : Column(
+        children: [
+          Expanded(
+            flex: 8,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.03,
+                vertical: MediaQuery.of(context).size.height * 0.02,
+              ),
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  PageView.builder(
+                    controller: _pageController,
+                    itemCount: offerImages.length,
+                    onPageChanged: (index) {
+                      setState(() {
+                        currentIndex = index;
+                      });
+                    },
+                    itemBuilder: (context, index) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.network(
+                          offerImages[index],
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, progress) {
+                            if (progress == null) return child;
+                            return _buildShimmerEffect();
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset("assets/placeholder.jpg", fit: BoxFit.cover);
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                  Positioned(
+                    bottom: MediaQuery.of(context).size.height * 0.03,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        offerImages.length,
+                            (index) => Container(
+                          margin: EdgeInsets.symmetric(horizontal: 4),
+                          width: currentIndex == index ? 12 : 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: currentIndex == index ? Colors.blue : Colors.grey,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  //Left-to-Right Shimmer Effect
+  Widget _buildShimmerEffect() {
+    return ListView.builder(
+      itemCount: 3,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: 150,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
 ///WORKING CODE
 
 

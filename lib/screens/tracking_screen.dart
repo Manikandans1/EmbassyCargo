@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:shimmer/shimmer.dart';
 import '../services/connectivity_service.dart';
 import 'no_internet_screen.dart';
 import 'trackingdetails_screen.dart';
@@ -161,27 +162,53 @@ class _TrackingScreenState extends State<TrackingScreen> {
                   keyboardType: TextInputType.text,
                 ),
                 SizedBox(height: screenHeight * 0.04),
+                // _isLoading
+                //     ? const CircularProgressIndicator(color: button_color)
+                //     : ElevatedButton(
+                //   onPressed: _trackPackage,
+                //   style: ElevatedButton.styleFrom(
+                //     padding: EdgeInsets.symmetric(vertical: screenHeight * 0.018),
+                //     backgroundColor: button_color, // Button color matching gradient
+                //     minimumSize: Size(double.infinity, screenHeight * 0.06),
+                //     shape: RoundedRectangleBorder(
+                //       borderRadius: BorderRadius.circular(10),
+                //     ),
+                //   ),
+                //   child: Text(
+                //     'Track Parcel',
+                //     style: GoogleFonts.roboto(
+                //       fontSize: screenWidth * 0.05,
+                //       fontWeight: FontWeight.bold,
+                //       color: Colors.black,
+                //     ),
+                //   ),
+                // ),
+
                 _isLoading
                     ? const CircularProgressIndicator(color: button_color)
                     : ElevatedButton(
-                  onPressed: _trackPackage,
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: screenHeight * 0.018),
-                    backgroundColor: button_color, // Button color matching gradient
-                    minimumSize: Size(double.infinity, screenHeight * 0.06),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    'Track Parcel',
-                    style: GoogleFonts.roboto(
-                      fontSize: screenWidth * 0.05,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
+                        onPressed: _trackPackage,
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: screenHeight * 0.018),
+                          backgroundColor: button_color, // Button color matching gradient
+                          minimumSize: Size(double.infinity, screenHeight * 0.06),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Shimmer.fromColors(
+                          baseColor: Colors.black, // Normal text color
+                          highlightColor: Colors.white, // Shimmer effect color
+                          child: Text(
+                            'Track Parcel',
+                            style: GoogleFonts.roboto(
+                              fontSize: screenWidth * 0.05,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black, // Keep it for default visibility
+                            ),
+                          ),
+                        ),
+                      ),
               ],
             ),
           ),
